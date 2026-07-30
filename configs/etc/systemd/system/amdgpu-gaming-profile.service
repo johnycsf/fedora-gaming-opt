@@ -1,0 +1,11 @@
+[Unit]
+Description=AMD GPU Gaming Performance Profile
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/amdgpu-gaming-profile
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
