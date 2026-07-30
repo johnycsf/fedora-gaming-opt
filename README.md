@@ -18,7 +18,7 @@ After a fresh Fedora install, clone this repo and run the install scripts.
 # Optional: install GitHub CLI if you want it later
 # sudo dnf install -y gh
 
-git clone https://github.com/<YOUR_USER>/fedora-gaming-opt.git
+git clone https://github.com/johnycsf/fedora-gaming-opt.git
 cd fedora-gaming-opt
 
 # 1) System packages + configs (needs sudo)

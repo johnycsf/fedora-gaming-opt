@@ -17,7 +17,7 @@ flatpak install -y flathub com.heroicgameslauncher.hgl
 ## Install
 
 ```bash
-git clone https://github.com/<YOUR_USER>/fedora-gaming-opt.git
+git clone https://github.com/johnycsf/fedora-gaming-opt.git
 cd fedora-gaming-opt
 
 sudo ./install.sh --system
