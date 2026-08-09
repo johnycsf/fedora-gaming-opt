@@ -49,23 +49,39 @@ fi
 echo "==> Installing minimal global env (shader cache size only)..."
 run install -Dm644 "${ROOT}/configs/etc/profile.d/gaming-env.sh" /etc/profile.d/gaming-env.sh
 
-echo "==> Installing AMDGPU gaming profile helper + service..."
-run install -Dm755 "${ROOT}/configs/usr/local/bin/amdgpu-gaming-profile" /usr/local/bin/amdgpu-gaming-profile
-run install -Dm644 "${ROOT}/configs/etc/systemd/system/amdgpu-gaming-profile.service" \
-  /etc/systemd/system/amdgpu-gaming-profile.service
-if [[ "$DRY_RUN" != "1" ]]; then
-  systemctl daemon-reload
-  systemctl enable --now amdgpu-gaming-profile.service
+has_amd_gpu=0
+if compgen -G /sys/class/drm/card*/device/vendor >/dev/null; then
+  for vendor in /sys/class/drm/card*/device/vendor; do
+    if [[ "$(cat "${vendor}" 2>/dev/null || true)" == "0x1002" ]]; then
+      has_amd_gpu=1
+      break
+    fi
+  done
 fi
 
-echo "==> Applying AMDGPU kernel parameter..."
-if command -v grubby >/dev/null; then
-  run grubby --update-kernel=ALL --args="amdgpu.ppfeaturemask=0xfff7ffff"
+if [[ "${has_amd_gpu}" -eq 1 ]]; then
+  echo "==> AMD GPU detected — installing AMDGPU gaming profile helper + service..."
+  run install -Dm755 "${ROOT}/configs/usr/local/bin/amdgpu-gaming-profile" /usr/local/bin/amdgpu-gaming-profile
+  run install -Dm644 "${ROOT}/configs/etc/systemd/system/amdgpu-gaming-profile.service" \
+    /etc/systemd/system/amdgpu-gaming-profile.service
+  if [[ "$DRY_RUN" != "1" ]]; then
+    systemctl daemon-reload
+    systemctl enable --now amdgpu-gaming-profile.service
+  fi
+
+  echo "==> Applying AMDGPU kernel parameter..."
+  if command -v grubby >/dev/null; then
+    run grubby --update-kernel=ALL --args="amdgpu.ppfeaturemask=0xfff7ffff"
+  else
+    echo "    WARNING: grubby missing — add amdgpu.ppfeaturemask=0xfff7ffff to GRUB manually"
+  fi
 else
-  echo "    WARNING: grubby missing — add amdgpu.ppfeaturemask=0xfff7ffff to GRUB manually"
+  echo "==> No AMD GPU detected — skipping AMD-only kernel args and amdgpu-gaming-profile service."
+  echo "    GameMode/MangoHud/sysctl pieces still install; review configs/etc/gamemode.ini for your GPU."
 fi
 
 echo "==> Enabling tuned throughput-performance..."
+echo "    Note: this prefers performance over power saving (desktops). Laptops may get hotter / lower battery life."
 run systemctl enable --now tuned
 if [[ "$DRY_RUN" != "1" ]]; then
   tuned-adm profile throughput-performance || true
@@ -75,4 +91,6 @@ fi
 echo ""
 echo "System setup complete."
 echo "Log out/in for gamemode group, then run: ./install.sh --user"
-echo "Reboot recommended for kernel args."
+if [[ "${has_amd_gpu}" -eq 1 ]]; then
+  echo "Reboot recommended for kernel args."
+fi

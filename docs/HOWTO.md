@@ -1,8 +1,12 @@
 # How to use this after a Fedora reinstall
 
+## Before you start
+
+This setup targets an **AMD Radeon Fedora desktop** similar to the hardware listed in the README. It is not guaranteed on other machines. Use `--dry-run`, read the disclaimer in the README, and keep rollback available.
+
 ## Prerequisites
 
-1. Fresh Fedora Workstation install (40+ recommended).
+1. Fresh Fedora Workstation install (40+ recommended), preferably a desktop with an AMD GPU.
 2. Working internet connection.
 3. User account with `sudo`.
 4. Steam and/or Heroic installed (can be done before or after these scripts).

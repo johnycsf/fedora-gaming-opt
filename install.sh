@@ -48,6 +48,27 @@ if [[ $DO_SYSTEM -eq 1 ]]; then
     echo "System install requires root. Re-run: sudo $0 --system"
     exit 1
   fi
+  cat <<'EOF'
+========================================================================
+WARNING — hardware-specific gaming tweaks
+========================================================================
+This repo was built and tested for a Fedora Workstation desktop with an
+AMD Radeon GPU (RX 6700 XT class) and an Intel desktop CPU.
+
+It changes system packages, sysctl, GameMode, tuned, and (on AMD GPUs)
+kernel parameters / power profiles. That can affect stability, thermals,
+and performance on OTHER hardware.
+
+- Use at your own risk. No warranty (see LICENSE / README disclaimer).
+- Prefer: ./install.sh --system --dry-run
+- Keep the uninstall/rollback scripts available.
+- Not recommended for NVIDIA-primary laptops or production machines.
+
+Press Enter to continue, or Ctrl+C to abort.
+EOF
+  if [[ "${FGO_ASSUME_YES:-0}" != "1" && "$DRY_RUN" != "1" ]]; then
+    read -r _
+  fi
   bash "${ROOT}/scripts/10-system.sh"
 fi
 
