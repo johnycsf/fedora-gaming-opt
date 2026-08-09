@@ -95,3 +95,7 @@ Check that forbidden global env vars are not present:
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
