@@ -112,6 +112,10 @@ Check that forbidden global env vars are not present:
 ./scripts/audit.sh
 ```
 
+## Repository activity
+
+![Repobeats analytics image](https://repobeats.axiom.co/api/embed/fdf157b607e0037a5b96b3ca298b4c82e9225b93.svg "Repobeats analytics image")
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
