@@ -15,4 +15,8 @@ This repository shares personal Fedora gaming tweaks. Credit for the underlying 
 - **Steam** — Valve Corporation
 - **Heroic Games Launcher** — [Heroic-Games-Launcher/HeroicGamesLauncher](https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher)
 
+## Keeping credits current
+
+If this repo gains a new upstream dependency or CLI tool, list it in this file in the same change that introduces it.
+
 All trademarks and project names belong to their respective owners. This repo is not affiliated with or endorsed by Fedora, Valve, Feral Interactive, or the other projects listed above.
