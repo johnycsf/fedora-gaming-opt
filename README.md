@@ -2,8 +2,9 @@
 
 ![Repobeats analytics image](https://repobeats.axiom.co/api/embed/fdf157b607e0037a5b96b3ca298b4c82e9225b93.svg "Repobeats analytics image")
 
-
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/johnycsf)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Issues](https://img.shields.io/badge/issues-welcome-lightgrey.svg)](../../issues/new/choose)
 
 Personal Fedora Workstation gaming setup for Steam and Heroic.
 
@@ -36,6 +37,18 @@ Tuned and battle-tested on:
 The installer **skips AMD-only kernel args/services** when no AMD GPU is detected, but GameMode/sysctl/tuned changes still apply and may not suit every machine.
 
 After a fresh Fedora install on matching hardware, clone this repo and run the install scripts.
+
+## Support this work
+
+If this stack saved you setup time, please consider sponsoring — it funds:
+
+- Keeping install/update/backup scripts working across common Linux distros
+- Testing safe upgrades against **official** upstream images
+- Building more beginner-friendly stacks that share the same `./manage.sh` UX
+
+[![Sponsor johnycsf](https://img.shields.io/badge/GitHub%20Sponsors-Donate-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/johnycsf)
+
+👉 **[github.com/sponsors/johnycsf](https://github.com/sponsors/johnycsf)**
 
 ## Quick start (after reinstall)
 
@@ -117,7 +130,6 @@ Check that forbidden global env vars are not present:
 ./scripts/audit.sh
 ```
 
-
 ## License
 
 MIT — see [LICENSE](LICENSE).
@@ -138,11 +150,6 @@ This project is provided **as is**. The author is **not responsible** for any lo
 
 If you hit an error, please [open a GitHub Issue](../../issues/new/choose) and follow [CONTRIBUTING.md](CONTRIBUTING.md). Fixes via Pull Request are welcome. GitHub Issues/PRs are the supported way to report problems—there is no private support channel.
 
-## Support this work
+## Security
 
-If these homelab tools save you time, please consider sponsoring:
-
-[![Sponsor johnycsf](https://img.shields.io/badge/GitHub%20Sponsors-Donate-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/johnycsf)
-
-👉 **[github.com/sponsors/johnycsf](https://github.com/sponsors/johnycsf)** — tips and monthly support keep these beginner-friendly stacks maintained.
-
+See [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
