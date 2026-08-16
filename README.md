@@ -126,6 +126,14 @@ MIT — see [LICENSE](LICENSE).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Disclaimer
+
+This project is provided **as is**. The author is **not responsible** for any loss, damage, data corruption, downtime, security issues, or other consequences from using it. Full text: [DISCLAIMER.md](DISCLAIMER.md).
+
+## Bug reports & contributions
+
+If you hit an error, please [open a GitHub Issue](../../issues/new/choose) and follow [CONTRIBUTING.md](CONTRIBUTING.md). Fixes via Pull Request are welcome. GitHub Issues/PRs are the supported way to report problems—there is no private support channel.
+
 ## Support this work
 
 If these homelab tools save you time, please consider sponsoring:
