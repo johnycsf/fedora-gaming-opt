@@ -40,15 +40,17 @@ After a fresh Fedora install on matching hardware, clone this repo and run the i
 
 ## Support this work
 
-If this stack saved you setup time, please consider sponsoring — it funds:
+**If this project helped you — or saved you time tuning your system — please consider [sponsoring or donating](https://github.com/sponsors/johnycsf).** Open-source tools only stay maintained when people chip in.
 
-- Keeping install/update/backup scripts working across common Linux distros
-- Testing safe upgrades against **official** upstream images
-- Building more beginner-friendly stacks that share the same `./manage.sh` UX
+Your sponsorship funds:
+
+- Keeping Fedora gaming scripts tested on current releases
+- Documenting safe tweaks, rollbacks, and what each change actually does
+- More desktop and homelab quality-of-life projects
 
 [![Sponsor johnycsf](https://img.shields.io/badge/GitHub%20Sponsors-Donate-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/johnycsf)
 
-👉 **[github.com/sponsors/johnycsf](https://github.com/sponsors/johnycsf)**
+👉 **[github.com/sponsors/johnycsf](https://github.com/sponsors/johnycsf)** — even a small monthly sponsorship helps keep development going.
 
 ## Quick start (after reinstall)
 
