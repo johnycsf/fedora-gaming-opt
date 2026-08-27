@@ -2,7 +2,7 @@
 # Fedora gaming optimizations — install orchestrator
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="${FGO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 DRY_RUN=0
 DO_SYSTEM=0
 DO_USER=0
@@ -12,9 +12,7 @@ SYSCTL_TWEAKS=0
 usage() {
   cat <<'EOF'
 Usage:
-  sudo ./install.sh --system [--dry-run]
-       ./install.sh --user   [--dry-run]
-  sudo ./install.sh --all    [--dry-run]   # system half requires root
+  ./manage.sh install [--sysctl-tweaks] [--performance-on] [--dry-run]
 
 Options:
   --system   Install packages and system-wide configs (root)
@@ -68,7 +66,7 @@ an explicit performance toggle. That can affect stability, thermals,
 and performance on OTHER hardware.
 
 - Use at your own risk. No warranty (see LICENSE / README disclaimer).
-- Prefer: ./install.sh --system --dry-run
+- Prefer: ./manage.sh install --dry-run
 - Keep the uninstall/rollback scripts available.
 - Not recommended for NVIDIA-primary laptops or production machines.
 
@@ -77,7 +75,7 @@ EOF
   if [[ "${FGO_ASSUME_YES:-0}" != "1" && "$DRY_RUN" != "1" ]]; then
     read -r _
   fi
-  bash "${ROOT}/scripts/10-system.sh"
+  bash "${ROOT}/internal/scripts/10-system.sh"
 fi
 
 if [[ $DO_USER -eq 1 ]]; then
@@ -85,15 +83,15 @@ if [[ $DO_USER -eq 1 ]]; then
     TARGET_USER="${SUDO_USER:-}"
     if [[ -z "${TARGET_USER}" || "${TARGET_USER}" == "root" ]]; then
       echo "User install must not run as root without SUDO_USER."
-      echo "After system install, run as your normal user: ./install.sh --user"
+      echo "After system install, run as your normal user: ./manage.sh install"
       exit 1
     fi
     echo "==> Re-running user install as ${TARGET_USER}..."
     sudo -u "${TARGET_USER}" -H env FGO_DRY_RUN="$DRY_RUN" FGO_ROOT="$ROOT" \
       FGO_AMD_PERFORMANCE="$AMD_PERFORMANCE" FGO_SYSCTL_TWEAKS="$SYSCTL_TWEAKS" \
-      bash "${ROOT}/scripts/20-user.sh"
+      bash "${ROOT}/internal/scripts/20-user.sh"
   else
-    bash "${ROOT}/scripts/20-user.sh"
+    bash "${ROOT}/internal/scripts/20-user.sh"
   fi
 fi
 

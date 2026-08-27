@@ -2,7 +2,7 @@
 # Fedora gaming optimizations — uninstall orchestrator
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="${FGO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 DRY_RUN=0
 DO_SYSTEM=0
 DO_USER=0
@@ -10,9 +10,7 @@ DO_USER=0
 usage() {
   cat <<'EOF'
 Usage:
-  sudo ./uninstall.sh --system [--dry-run]
-       ./uninstall.sh --user   [--dry-run]
-  sudo ./uninstall.sh --all    [--dry-run]
+  ./manage.sh uninstall [--dry-run]
 
 Removes configs/services installed by this repo.
 Does not remove DNF packages (mangohud, gamescope, etc.).
@@ -43,13 +41,13 @@ if [[ $DO_USER -eq 1 ]]; then
   if [[ "${EUID}" -eq 0 ]]; then
     TARGET_USER="${SUDO_USER:-}"
     if [[ -z "${TARGET_USER}" || "${TARGET_USER}" == "root" ]]; then
-      echo "Pass --user as your normal account, or: sudo -u USER ./uninstall.sh --user"
+      echo "Run ./manage.sh uninstall from your normal account."
       exit 1
     fi
     sudo -u "${TARGET_USER}" -H env FGO_DRY_RUN="$DRY_RUN" FGO_ROOT="$ROOT" \
-      bash "${ROOT}/scripts/rollback-20-user.sh"
+      bash "${ROOT}/internal/scripts/rollback-20-user.sh"
   else
-    bash "${ROOT}/scripts/rollback-20-user.sh"
+    bash "${ROOT}/internal/scripts/rollback-20-user.sh"
   fi
 fi
 
@@ -58,7 +56,7 @@ if [[ $DO_SYSTEM -eq 1 ]]; then
     echo "System uninstall requires root. Re-run: sudo $0 --system"
     exit 1
   fi
-  bash "${ROOT}/scripts/rollback-10-system.sh"
+  bash "${ROOT}/internal/scripts/rollback-10-system.sh"
 fi
 
 echo ""

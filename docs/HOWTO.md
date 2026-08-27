@@ -101,18 +101,18 @@ gamemoded -s
 vulkaninfo --summary | head -40
 
 # Safety audit
-./scripts/audit.sh
+./manage.sh audit
 ```
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
-| Steam error `0x3008` | `./scripts/fix-steam.sh` — do not launch Steam via `gamemoderun` |
-| Apps fail with Gamescope WSI / swapchain errors | Ensure `ENABLE_GAMESCOPE_WSI` is unset globally; re-run `./scripts/audit.sh` |
+| Steam error `0x3008` | `./manage.sh fix-steam` — do not launch Steam via `gamemoderun` |
+| Apps fail with Gamescope WSI / swapchain errors | Ensure `ENABLE_GAMESCOPE_WSI` is unset globally; re-run `./manage.sh audit` |
 | GameMode inactive | Log out/in after system install; `systemctl --user enable --now gamemoded` |
-| Heroic GameMode fails in Flatpak | Re-run `./install.sh --user` |
-| Desktop feels “stuck” at max clocks | Run `./performance.sh off` to restore AMD automatic mode |
+| Heroic GameMode fails in Flatpak | Re-run `./manage.sh install` |
+| Desktop feels “stuck” at max clocks | Run `./manage.sh performance off` to restore AMD automatic mode |
 
 ## Full rollback
 

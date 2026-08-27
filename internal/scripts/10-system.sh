@@ -2,7 +2,7 @@
 # System-level gaming setup (requires root)
 set -euo pipefail
 
-ROOT="${FGO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+ROOT="${FGO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 DRY_RUN="${FGO_DRY_RUN:-0}"
 USER_NAME="${SUDO_USER:-${USER:-}}"
 AMD_PERFORMANCE="${FGO_AMD_PERFORMANCE:-0}"
@@ -55,12 +55,12 @@ fi
 
 echo "==> Installing GameMode config..."
 backup_file /etc/gamemode.ini
-run install -Dm644 "${ROOT}/configs/etc/gamemode.ini" /etc/gamemode.ini
+run install -Dm644 "${ROOT}/internal/configs/etc/gamemode.ini" /etc/gamemode.ini
 
 if [[ "${SYSCTL_TWEAKS}" == "1" ]]; then
   echo "==> Installing optional conservative sysctl tweaks..."
   backup_file /etc/sysctl.d/99-gaming.conf
-  run install -Dm644 "${ROOT}/configs/etc/sysctl.d/99-gaming.conf" /etc/sysctl.d/99-gaming.conf
+  run install -Dm644 "${ROOT}/internal/configs/etc/sysctl.d/99-gaming.conf" /etc/sysctl.d/99-gaming.conf
   if [[ "$DRY_RUN" != "1" ]]; then
     sysctl --system >/dev/null || true
   fi
@@ -70,7 +70,7 @@ fi
 
 echo "==> Installing minimal global env (shader cache size only)..."
 backup_file /etc/profile.d/gaming-env.sh
-run install -Dm644 "${ROOT}/configs/etc/profile.d/gaming-env.sh" /etc/profile.d/gaming-env.sh
+run install -Dm644 "${ROOT}/internal/configs/etc/profile.d/gaming-env.sh" /etc/profile.d/gaming-env.sh
 
 has_amd_gpu=0
 if compgen -G /sys/class/drm/card*/device/vendor >/dev/null; then
@@ -84,19 +84,19 @@ fi
 
 echo "==> Installing desktop performance toggle..."
 backup_file /usr/local/bin/fedora-gaming-performance
-run install -Dm755 "${ROOT}/configs/usr/local/bin/fedora-gaming-performance" /usr/local/bin/fedora-gaming-performance
+run install -Dm755 "${ROOT}/internal/configs/usr/local/bin/fedora-gaming-performance" /usr/local/bin/fedora-gaming-performance
 
 if [[ "${has_amd_gpu}" -eq 1 ]]; then
   echo "==> AMD GPU detected — installing AMDGPU helper for the performance toggle..."
   backup_file /usr/local/bin/amdgpu-gaming-profile
   backup_file /etc/systemd/system/amdgpu-gaming-profile.service
-  run install -Dm755 "${ROOT}/configs/usr/local/bin/amdgpu-gaming-profile" /usr/local/bin/amdgpu-gaming-profile
-  run install -Dm644 "${ROOT}/configs/etc/systemd/system/amdgpu-gaming-profile.service" \
+  run install -Dm755 "${ROOT}/internal/configs/usr/local/bin/amdgpu-gaming-profile" /usr/local/bin/amdgpu-gaming-profile
+  run install -Dm644 "${ROOT}/internal/configs/etc/systemd/system/amdgpu-gaming-profile.service" \
     /etc/systemd/system/amdgpu-gaming-profile.service
   if [[ "$DRY_RUN" != "1" ]]; then
     systemctl daemon-reload
   fi
-  echo "    Use ./performance.sh on before gaming and ./performance.sh off afterward."
+  echo "    Use ./manage.sh performance on before gaming and ./manage.sh performance off afterward."
 else
   echo "==> No AMD GPU detected — skipping AMD-only tuning."
 fi
@@ -113,5 +113,5 @@ fi
 
 echo ""
 echo "System setup complete."
-echo "Log out/in for gamemode group, then run: ./install.sh --user"
-echo "Toggle desktop mode any time: ./performance.sh on|off|status"
+echo "Log out/in for gamemode group, then run: ./manage.sh install"
+echo "Toggle desktop mode any time: ./manage.sh performance on|off|status"

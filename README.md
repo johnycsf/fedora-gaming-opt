@@ -17,7 +17,7 @@ It was written for **one** machine and is published so others can learn from it 
 - Advanced options can change kernel parameters, CPU/GPU power behavior, and sysctl.
 - May reduce battery life, raise temps, or cause instability on hardware that does not match the reference system.
 - Always try `--dry-run` first, and keep [uninstall/rollback](#rollback) available.
-- Prefer reading the scripts under `scripts/` and `configs/` before applying.
+- `manage.sh` is the only public command. Its supporting implementation and templates live under `internal/`.
 
 If you want something safer/vendor-supported, use Fedora’s defaults or tools aimed at your GPU vendor — do not treat this repo as official advice.
 
@@ -139,7 +139,7 @@ Advanced options are deliberately opt-in:
 Check that forbidden global env vars are not present:
 
 ```bash
-./scripts/audit.sh
+./manage.sh audit
 ```
 
 ## License

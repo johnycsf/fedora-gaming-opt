@@ -2,7 +2,7 @@
 # User-level gaming setup (no sudo)
 set -euo pipefail
 
-ROOT="${FGO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+ROOT="${FGO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 DRY_RUN="${FGO_DRY_RUN:-0}"
 HOME_DIR="${HOME}"
 CORES="$(nproc 2>/dev/null || echo 6)"
@@ -45,14 +45,14 @@ if [[ "$DRY_RUN" == "1" ]]; then
   echo "DRY-RUN: write MangoHud.conf"
 else
   sed "s|__HOME__|${HOME_DIR}|g; s|__GPU_TEXT__|GPU|g" \
-    "${ROOT}/configs/home/.config/MangoHud/MangoHud.conf" \
+    "${ROOT}/internal/configs/home/.config/MangoHud/MangoHud.conf" \
     > "${HOME_DIR}/.config/MangoHud/MangoHud.conf"
 fi
 
 echo "==> vkBasalt config..."
 backup_file "${HOME_DIR}/.config/vkBasalt/vkBasalt.conf"
 run mkdir -p "${HOME_DIR}/.config/vkBasalt"
-run install -Dm644 "${ROOT}/configs/home/.config/vkBasalt/vkBasalt.conf" \
+run install -Dm644 "${ROOT}/internal/configs/home/.config/vkBasalt/vkBasalt.conf" \
   "${HOME_DIR}/.config/vkBasalt/vkBasalt.conf"
 
 echo "==> Ensuring Steam is NOT wrapped with gamemoderun..."
@@ -76,7 +76,7 @@ if command -v flatpak >/dev/null && flatpak info com.heroicgameslauncher.hgl >/d
   if [[ "$DRY_RUN" == "1" ]]; then
     echo "DRY-RUN: python3 update-heroic-config.py"
   else
-    CORES="${CORES}" python3 "${ROOT}/scripts/update-heroic-config.py"
+    CORES="${CORES}" python3 "${ROOT}/internal/scripts/update-heroic-config.py"
   fi
 else
   echo "==> Heroic Flatpak not installed — skipping Heroic overrides"
@@ -99,4 +99,4 @@ echo ""
 echo "User setup complete."
 echo "  Steam: launch normally; use 'gamemoderun %command%' per game only"
 echo "  MangoHud: Shift+F12 in-game when launched with mangohud"
-echo "  Audit: ./scripts/audit.sh"
+echo "  Audit: ./manage.sh audit"
