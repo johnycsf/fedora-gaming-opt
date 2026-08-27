@@ -20,7 +20,7 @@ Options:
   --system   Install packages and system-wide configs (root)
   --user     Install per-user Steam/Heroic/MangoHud configs
   --all      Run system then user (must start as root for system)
-  --amd-performance  Opt in to persistent AMD high-performance mode (advanced)
+  --amd-performance  Enable desktop performance mode immediately after install
   --sysctl-tweaks    Install the optional conservative sysctl preset
   --dry-run  Print actions without applying
   -h, --help Show this help
@@ -63,8 +63,8 @@ WARNING — hardware-specific gaming tweaks
 This repo was built and tested for a Fedora Workstation desktop with an
 AMD Radeon GPU (RX 6700 XT class) and an Intel desktop CPU.
 
-It changes system packages, sysctl, GameMode, tuned, and (on AMD GPUs)
-kernel parameters / power profiles. That can affect stability, thermals,
+It changes system packages, optional sysctl, GameMode, and (on AMD GPUs)
+an explicit performance toggle. That can affect stability, thermals,
 and performance on OTHER hardware.
 
 - Use at your own risk. No warranty (see LICENSE / README disclaimer).
@@ -98,4 +98,4 @@ if [[ $DO_USER -eq 1 ]]; then
 fi
 
 echo ""
-echo "Done. See docs/HOWTO.md for Steam launch options and reboot notes."
+echo "Done. See docs/HOWTO.md for Steam launch options and performance-mode notes."

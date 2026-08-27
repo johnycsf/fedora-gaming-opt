@@ -45,7 +45,8 @@ run dnf install -y \
   corectrl \
   vulkan-tools \
   lm_sensors \
-  vkBasalt vkBasalt.i686
+  vkBasalt vkBasalt.i686 \
+  tuned
 
 if [[ -n "${USER_NAME}" && "${USER_NAME}" != "root" ]]; then
   echo "==> Adding ${USER_NAME} to gamemode group..."
@@ -81,8 +82,12 @@ if compgen -G /sys/class/drm/card*/device/vendor >/dev/null; then
   done
 fi
 
-if [[ "${has_amd_gpu}" -eq 1 && "${AMD_PERFORMANCE}" == "1" ]]; then
-  echo "==> AMD GPU detected — installing AMDGPU gaming profile helper + service..."
+echo "==> Installing desktop performance toggle..."
+backup_file /usr/local/bin/fedora-gaming-performance
+run install -Dm755 "${ROOT}/configs/usr/local/bin/fedora-gaming-performance" /usr/local/bin/fedora-gaming-performance
+
+if [[ "${has_amd_gpu}" -eq 1 ]]; then
+  echo "==> AMD GPU detected — installing AMDGPU helper for the performance toggle..."
   backup_file /usr/local/bin/amdgpu-gaming-profile
   backup_file /etc/systemd/system/amdgpu-gaming-profile.service
   run install -Dm755 "${ROOT}/configs/usr/local/bin/amdgpu-gaming-profile" /usr/local/bin/amdgpu-gaming-profile
@@ -90,20 +95,15 @@ if [[ "${has_amd_gpu}" -eq 1 && "${AMD_PERFORMANCE}" == "1" ]]; then
     /etc/systemd/system/amdgpu-gaming-profile.service
   if [[ "$DRY_RUN" != "1" ]]; then
     systemctl daemon-reload
-    systemctl enable --now amdgpu-gaming-profile.service
   fi
-
-  echo "==> Applying AMDGPU kernel parameter..."
-  if command -v grubby >/dev/null; then
-    run grubby --update-kernel=ALL --args="amdgpu.ppfeaturemask=0xfff7ffff"
-  else
-    echo "    WARNING: grubby missing — add amdgpu.ppfeaturemask=0xfff7ffff to GRUB manually"
-  fi
-elif [[ "${has_amd_gpu}" -eq 1 ]]; then
-  echo "==> AMD GPU detected — leaving persistent high clocks and ppfeaturemask disabled by default."
-  echo "    Use --amd-performance only after comparing thermals, power, and frametimes."
+  echo "    Use ./performance.sh on before gaming and ./performance.sh off afterward."
 else
   echo "==> No AMD GPU detected — skipping AMD-only tuning."
+fi
+
+if [[ "${AMD_PERFORMANCE}" == "1" ]]; then
+  echo "==> Enabling desktop performance mode after install..."
+  run /usr/local/bin/fedora-gaming-performance on
 fi
 
 if [[ "$DRY_RUN" != "1" ]]; then
@@ -114,6 +114,4 @@ fi
 echo ""
 echo "System setup complete."
 echo "Log out/in for gamemode group, then run: ./install.sh --user"
-if [[ "${has_amd_gpu}" -eq 1 && "${AMD_PERFORMANCE}" == "1" ]]; then
-  echo "Reboot recommended for kernel args."
-fi
+echo "Toggle desktop mode any time: ./performance.sh on|off|status"

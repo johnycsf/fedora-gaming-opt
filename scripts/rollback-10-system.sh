@@ -29,6 +29,7 @@ restore_file() {
 echo "==> Rolling back system gaming configs..."
 
 run systemctl disable --now amdgpu-gaming-profile.service 2>/dev/null || true
+restore_file /usr/local/bin/fedora-gaming-performance || run rm -f /usr/local/bin/fedora-gaming-performance
 restore_file /etc/systemd/system/amdgpu-gaming-profile.service || run rm -f /etc/systemd/system/amdgpu-gaming-profile.service
 restore_file /usr/local/bin/amdgpu-gaming-profile || run rm -f /usr/local/bin/amdgpu-gaming-profile
 if [[ "$DRY_RUN" != "1" ]]; then

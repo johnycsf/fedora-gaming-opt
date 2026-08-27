@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/amdgpu-gaming-profile
+ExecStart=/usr/local/bin/amdgpu-gaming-profile on
 RemainAfterExit=yes
 
 [Install]

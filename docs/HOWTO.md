@@ -28,7 +28,6 @@ sudo ./install.sh --system
 # Log out / log in so the gamemode group applies
 
 ./install.sh --user
-# Reboot only if you explicitly enable --amd-performance.
 ```
 
 ### Flags
@@ -40,7 +39,8 @@ sudo ./install.sh --system
 | `./install.sh --all` | System then user (system half still needs sudo) |
 | `./install.sh --dry-run` | Print actions without changing anything |
 | `sudo ./install.sh --system --sysctl-tweaks` | Opt in to conservative sysctl compatibility settings |
-| `sudo ./install.sh --system --amd-performance` | Opt in to persistent AMD high-performance mode; reboot required |
+| `./performance.sh on` | Enable desktop CPU/GPU performance mode before gaming |
+| `./performance.sh off` | Restore the prior tuned profile and AMD automatic mode |
 | `./scripts/audit.sh` | Fail if forbidden global env vars exist |
 | `./scripts/check.sh` | Check tools and conservative defaults without changing anything |
 | `./scripts/benchmark.sh before` | Record a baseline system snapshot for a repeatable game test |
@@ -116,14 +116,13 @@ vulkaninfo --summary | head -40
 | Apps fail with Gamescope WSI / swapchain errors | Ensure `ENABLE_GAMESCOPE_WSI` is unset globally; re-run `./scripts/audit.sh` |
 | GameMode inactive | Log out/in after system install; `systemctl --user enable --now gamemoded` |
 | Heroic GameMode fails in Flatpak | Re-run `./install.sh --user` |
-| Desktop feels “stuck” at max clocks | Disable the advanced AMD option with `sudo ./uninstall.sh --system`, then reboot |
+| Desktop feels “stuck” at max clocks | Run `./performance.sh off` to restore AMD automatic mode |
 
 ## Full rollback
 
 ```bash
 ./uninstall.sh --user
 sudo ./uninstall.sh --system
-sudo reboot
 ```
 
 Packages installed by the scripts (mangohud, gamescope, etc.) are **not** removed by uninstall, so Steam/games keep working. Remove them with `dnf` if you want a clean slate:

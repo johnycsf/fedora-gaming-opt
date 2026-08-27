@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Explicit desktop gaming-performance toggle. Requires root.
+set -euo pipefail
+
+state_dir=/var/lib/fedora-gaming-opt
+previous_profile="${state_dir}/previous-tuned-profile"
+mode="${1:-status}"
+
+[[ "${EUID}" -eq 0 ]] || { echo "Run with sudo." >&2; exit 1; }
+case "${mode}" in on|off|status) ;; *) echo "Usage: $0 {on|off|status}" >&2; exit 2 ;; esac
+
+current_profile() {
+  tuned-adm active 2>/dev/null | sed -n 's/^Current active profile: //p' | head -1
+}
+
+case "${mode}" in
+  on)
+    mkdir -p "${state_dir}"
+    current="$(current_profile)"
+    [[ -n "${current}" && ! -f "${previous_profile}" ]] && printf '%s\n' "${current}" >"${previous_profile}"
+    systemctl enable --now tuned
+    tuned-adm profile throughput-performance
+    [[ -x /usr/local/bin/amdgpu-gaming-profile ]] && /usr/local/bin/amdgpu-gaming-profile on
+    echo "Gaming performance mode enabled. GameMode still applies its per-game optimizations."
+    ;;
+  off)
+    [[ -x /usr/local/bin/amdgpu-gaming-profile ]] && /usr/local/bin/amdgpu-gaming-profile off
+    if [[ -f "${previous_profile}" ]]; then
+      tuned-adm profile "$(cat "${previous_profile}")"
+      rm -f "${previous_profile}"
+    else
+      echo "No previous tuned profile was recorded; leaving the current profile unchanged."
+    fi
+    echo "Gaming performance mode disabled; AMD policy returned to auto."
+    ;;
+  status)
+    echo "Tuned profile: $(current_profile || true)"
+    grep -H . /sys/class/drm/card*/device/power_dpm_force_performance_level 2>/dev/null || true
+    ;;
+esac

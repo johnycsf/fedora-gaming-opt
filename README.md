@@ -34,8 +34,8 @@ Tuned and battle-tested on:
 **Reasonable fit:** similar AMD Radeon + Fedora desktop gaming PCs.  
 **Poor fit / skip:** NVIDIA-primary systems, Intel-only iGPU laptops, servers, or anyone who needs maximum stability over FPS.
 
-The default install avoids persistent AMD power/kernel tuning. Those options are
-available only on AMD hardware when explicitly requested.
+The default install avoids persistent AMD power/kernel tuning. Desktop
+performance mode is an explicit, reversible toggle on AMD hardware.
 
 After a fresh Fedora install on matching hardware, clone this repo and run the install scripts.
 
@@ -87,7 +87,7 @@ sudo ./install.sh --system
 |-------|---------|
 | Packages | GameMode, MangoHud, gamescope, CoreCtrl, vulkan-tools, vkBasalt, lm_sensors |
 | GameMode | Per-game governor and priority management; no core pinning by default |
-| AMDGPU | Advanced persistent high-performance mode is explicit opt-in |
+| AMDGPU | Reversible high-performance toggle on AMD hardware |
 | Sysctl | Optional, conservative compatibility preset |
 | Global env | **Only** `MESA_SHADER_CACHE_MAX_SIZE=512MB` |
 | Heroic | GameMode + esync/fsync, bounded workers, safe env only |
@@ -133,7 +133,8 @@ Advanced options are deliberately opt-in:
 
 ```bash
 sudo ./install.sh --system --sysctl-tweaks
-sudo ./install.sh --system --amd-performance  # persistent AMD clocks/features; reboot required
+./performance.sh on      # maximum desktop performance while gaming
+./performance.sh off     # restore the prior CPU profile and AMD auto behavior
 ```
 
 ## Rollback
@@ -141,7 +142,6 @@ sudo ./install.sh --system --amd-performance  # persistent AMD clocks/features; 
 ```bash
 ./uninstall.sh --user
 sudo ./uninstall.sh --system
-sudo reboot
 ```
 
 ## Audit (optional)
