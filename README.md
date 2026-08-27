@@ -142,7 +142,7 @@ Check that forbidden global env vars are not present:
 ./manage.sh audit
 ```
 
-When moving from the repository's older always-on tuning, run `./manage.sh performance off` once. It selects the persistent `balanced` tuned profile if no earlier profile was saved, returns AMD policy to automatic, and removes the old `amdgpu.ppfeaturemask` boot setting. Reboot once only when that legacy boot setting is removed.
+When moving from the repository's older always-on tuning, run `./manage.sh performance off` once. It disables the old boot service that forced AMD clocks high, selects the persistent `balanced` tuned profile if no earlier profile was saved, returns AMD policy to automatic, and removes the old `amdgpu.ppfeaturemask` boot setting. Reboot once only when that legacy boot setting is removed.
 
 ## License
 

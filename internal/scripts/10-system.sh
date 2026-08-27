@@ -91,8 +91,10 @@ if [[ "${has_amd_gpu}" -eq 1 ]]; then
   backup_file /usr/local/bin/amdgpu-gaming-profile
   backup_file /etc/systemd/system/amdgpu-gaming-profile.service
   run install -Dm755 "${ROOT}/internal/configs/usr/local/bin/amdgpu-gaming-profile" /usr/local/bin/amdgpu-gaming-profile
-  run install -Dm644 "${ROOT}/internal/configs/etc/systemd/system/amdgpu-gaming-profile.service" \
-    /etc/systemd/system/amdgpu-gaming-profile.service
+  # The helper is invoked only by the explicit performance toggle. Do not
+  # leave an always-on boot service behind from older releases.
+  run systemctl disable --now amdgpu-gaming-profile.service 2>/dev/null || true
+  run rm -f /etc/systemd/system/amdgpu-gaming-profile.service
   if [[ "$DRY_RUN" != "1" ]]; then
     systemctl daemon-reload
   fi
