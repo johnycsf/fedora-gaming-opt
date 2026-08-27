@@ -30,23 +30,49 @@ backup_file() {
   fi
 }
 
+declare -A gpu_vendors=()
+has_amd_gpu=0
+if compgen -G /sys/class/drm/card*/device/vendor >/dev/null; then
+  for vendor_path in /sys/class/drm/card*/device/vendor; do
+    case "$(cat "${vendor_path}" 2>/dev/null || true)" in
+      0x1002) gpu_vendors[AMD]=1; has_amd_gpu=1 ;;
+      0x10de) gpu_vendors[NVIDIA]=1 ;;
+      0x8086) gpu_vendors[Intel]=1 ;;
+      *) gpu_vendors[Other]=1 ;;
+    esac
+  done
+fi
+gpu_names=("${!gpu_vendors[@]}")
+if [[ "${#gpu_names[@]}" -gt 0 ]]; then
+  gpu_summary="$(IFS=', '; printf '%s' "${gpu_names[*]}")"
+else
+  gpu_summary="unknown"
+fi
+
 echo "==> System gaming setup"
 echo "    Target user: ${USER_NAME:-unknown}"
+echo "    Detected GPU vendor(s): ${gpu_summary}"
 
 if [[ -z "${USER_NAME}" || "${USER_NAME}" == "root" ]]; then
   echo "WARNING: Could not detect non-root user for gamemode group."
 fi
 
 echo "==> Installing packages..."
-run dnf install -y \
+packages=(
   gamemode gamemode.i686 \
   mangohud mangohud.i686 \
   gamescope \
-  corectrl \
   vulkan-tools \
   lm_sensors \
   vkBasalt vkBasalt.i686 \
   tuned
+)
+if [[ "${has_amd_gpu}" -eq 1 ]]; then
+  packages+=(corectrl)
+else
+  echo "    Skipping CoreCtrl (AMD GPU utility)."
+fi
+run dnf install -y "${packages[@]}"
 
 if [[ -n "${USER_NAME}" && "${USER_NAME}" != "root" ]]; then
   echo "==> Adding ${USER_NAME} to gamemode group..."
@@ -72,16 +98,6 @@ echo "==> Installing minimal global env (shader cache size only)..."
 backup_file /etc/profile.d/gaming-env.sh
 run install -Dm644 "${ROOT}/internal/configs/etc/profile.d/gaming-env.sh" /etc/profile.d/gaming-env.sh
 
-has_amd_gpu=0
-if compgen -G /sys/class/drm/card*/device/vendor >/dev/null; then
-  for vendor in /sys/class/drm/card*/device/vendor; do
-    if [[ "$(cat "${vendor}" 2>/dev/null || true)" == "0x1002" ]]; then
-      has_amd_gpu=1
-      break
-    fi
-  done
-fi
-
 echo "==> Installing desktop performance toggle..."
 backup_file /usr/local/bin/fedora-gaming-performance
 run install -Dm755 "${ROOT}/internal/configs/usr/local/bin/fedora-gaming-performance" /usr/local/bin/fedora-gaming-performance
@@ -100,7 +116,7 @@ if [[ "${has_amd_gpu}" -eq 1 ]]; then
   fi
   echo "    Use ./manage.sh performance on before gaming and ./manage.sh performance off afterward."
 else
-  echo "==> No AMD GPU detected — skipping AMD-only tuning."
+  echo "==> ${gpu_summary} GPU detected — skipping AMD-only GPU controls; generic gaming setup remains enabled."
 fi
 
 if [[ "${AMD_PERFORMANCE}" == "1" ]]; then

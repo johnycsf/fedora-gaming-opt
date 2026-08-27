@@ -21,9 +21,9 @@ It was written for **one** machine and is published so others can learn from it 
 
 If you want something safer/vendor-supported, use Fedora’s defaults or tools aimed at your GPU vendor — do not treat this repo as official advice.
 
-## Who this is for
+## Hardware support
 
-Tuned and battle-tested on:
+Validated on this reference system:
 
 - **CPU:** Intel Core i5-9600K (6 cores)
 - **GPU:** AMD Radeon RX 6700 XT (RADV)
@@ -31,13 +31,22 @@ Tuned and battle-tested on:
 - **Desktop:** GNOME Wayland
 - **Distro:** Fedora Workstation 40+ (desktop)
 
-**Reasonable fit:** similar AMD Radeon + Fedora desktop gaming PCs.  
-**Poor fit / skip:** NVIDIA-primary systems, Intel-only iGPU laptops, servers, or anyone who needs maximum stability over FPS.
+The script is not tied to that CPU or GPU model. Its generic Fedora gaming setup
+works with **AMD or Intel CPUs** and with **AMD, NVIDIA, or Intel GPUs**. It
+detects GPU vendors at install time and keeps vendor-specific steps separate:
 
-The default install avoids persistent AMD power/kernel tuning. Desktop
-performance mode is an explicit, reversible toggle on AMD hardware.
+- **All supported GPU vendors:** GameMode, MangoHud, Gamescope, Vulkan tools,
+  vkBasalt, Steam shader-thread configuration, Heroic configuration, and the
+  reversible `tuned` performance profile.
+- **AMD GPUs:** additionally install CoreCtrl and enable the AMD GPU policy
+  portion of `./manage.sh performance on|off`.
+- **NVIDIA or Intel GPUs:** skip only the AMD-specific CoreCtrl and AMD power
+  policy steps; the rest of the setup remains available.
 
-After a fresh Fedora install on matching hardware, clone this repo and run the install scripts.
+The default install avoids persistent GPU power/kernel tuning. The performance
+toggle is reversible on every CPU; its GPU policy portion is AMD-only. Servers,
+laptops, and unusual driver stacks remain less tested, so start with
+`./manage.sh install --dry-run`.
 
 ## Support this work
 
@@ -76,9 +85,9 @@ Or do both halves in one go (still log out afterward):
 
 | Layer | Changes |
 |-------|---------|
-| Packages | GameMode, MangoHud, gamescope, CoreCtrl, vulkan-tools, vkBasalt, lm_sensors |
+| Packages | GameMode, MangoHud, gamescope, vulkan-tools, vkBasalt, lm_sensors, tuned; CoreCtrl on AMD GPUs |
 | GameMode | Per-game governor and priority management; no core pinning by default |
-| AMDGPU | Reversible high-performance toggle on AMD hardware |
+| GPU controls | Reversible AMD GPU power toggle on AMD hardware; safely skipped on NVIDIA and Intel GPUs |
 | Sysctl | Optional, conservative compatibility preset |
 | Global env | **Only** `MESA_SHADER_CACHE_MAX_SIZE=512MB` |
 | Steam | Uses every logical CPU thread for Vulkan shader background processing (native and Flatpak) |
