@@ -24,26 +24,22 @@ flatpak install -y flathub com.heroicgameslauncher.hgl
 git clone https://github.com/johnycsf/fedora-gaming-opt.git
 cd fedora-gaming-opt
 
-sudo ./install.sh --system
-# Log out / log in so the gamemode group applies
-
-./install.sh --user
+./manage.sh install
+# Log out / log in once so the gamemode group applies.
 ```
 
 ### Flags
 
 | Command | Purpose |
 |---------|---------|
-| `sudo ./install.sh --system` | Packages + system configs |
-| `./install.sh --user` | Per-user configs (Heroic, MangoHud, etc.) |
-| `./install.sh --all` | System then user (system half still needs sudo) |
-| `./install.sh --dry-run` | Print actions without changing anything |
-| `sudo ./install.sh --system --sysctl-tweaks` | Opt in to conservative sysctl compatibility settings |
-| `./performance.sh on` | Enable desktop CPU/GPU performance mode before gaming |
-| `./performance.sh off` | Restore the prior tuned profile and AMD automatic mode |
-| `./scripts/audit.sh` | Fail if forbidden global env vars exist |
-| `./scripts/check.sh` | Check tools and conservative defaults without changing anything |
-| `./scripts/benchmark.sh before` | Record a baseline system snapshot for a repeatable game test |
+| `./manage.sh install` | Install packages plus system/user configuration |
+| `./manage.sh install --dry-run` | Print installation actions without changing anything |
+| `./manage.sh install --sysctl-tweaks` | Opt in to conservative sysctl compatibility settings |
+| `./manage.sh performance on` | Enable desktop CPU/GPU performance mode before gaming |
+| `./manage.sh performance off` | Restore the prior tuned profile and AMD automatic mode |
+| `./manage.sh audit` | Fail if forbidden global gaming environment variables exist |
+| `./manage.sh status` | Check readiness and current performance mode |
+| `./manage.sh benchmark before` | Record a baseline system snapshot for a repeatable game test |
 
 ## Steam settings (manual, once)
 
@@ -98,8 +94,8 @@ systemctl --user status gamemoded
 gamemoded -s
 
 # Non-destructive readiness and baseline capture
-./scripts/check.sh
-./scripts/benchmark.sh before
+./manage.sh status
+./manage.sh benchmark before
 
 # Vulkan
 vulkaninfo --summary | head -40
@@ -121,8 +117,7 @@ vulkaninfo --summary | head -40
 ## Full rollback
 
 ```bash
-./uninstall.sh --user
-sudo ./uninstall.sh --system
+./manage.sh uninstall
 ```
 
 Packages installed by the scripts (mangohud, gamescope, etc.) are **not** removed by uninstall, so Steam/games keep working. Remove them with `dnf` if you want a clean slate:

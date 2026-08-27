@@ -62,23 +62,14 @@ Your sponsorship funds:
 git clone https://github.com/johnycsf/fedora-gaming-opt.git
 cd fedora-gaming-opt
 
-# 1) System packages + configs (needs sudo)
-sudo ./install.sh --system
-
-# 2) Log out and back in (gamemode group)
-
-# 3) User configs (Steam/Heroic/MangoHud) — no sudo
-./install.sh --user
-
-# 4) Reboot so kernel GPU args apply
-# Reboot is only needed when using the advanced AMD option below.
+./manage.sh install
+# Log out and back in once so the gamemode group applies.
 ```
 
 Or do both halves in one go (still log out afterward):
 
 ```bash
-sudo ./install.sh --system
-./install.sh --user
+./manage.sh install
 ```
 
 ## What this installs
@@ -123,25 +114,24 @@ Record a baseline, run the same game/scene with MangoHud logging, then compare
 frametimes, 1% lows, temperatures, and power—not only average FPS:
 
 ```bash
-./scripts/check.sh
-./scripts/benchmark.sh before
+./manage.sh status
+./manage.sh benchmark before
 # test a repeatable game scene
-./scripts/benchmark.sh after
+./manage.sh benchmark after
 ```
 
 Advanced options are deliberately opt-in:
 
 ```bash
-sudo ./install.sh --system --sysctl-tweaks
-./performance.sh on      # maximum desktop performance while gaming
-./performance.sh off     # restore the prior CPU profile and AMD auto behavior
+./manage.sh install --sysctl-tweaks
+./manage.sh performance on
+./manage.sh performance off
 ```
 
 ## Rollback
 
 ```bash
-./uninstall.sh --user
-sudo ./uninstall.sh --system
+./manage.sh uninstall
 ```
 
 ## Audit (optional)
