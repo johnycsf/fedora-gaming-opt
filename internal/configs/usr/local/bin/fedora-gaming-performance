@@ -25,6 +25,13 @@ case "${mode}" in
     echo "Gaming performance mode enabled. GameMode still applies its per-game optimizations."
     ;;
   off)
+    # Older releases enabled a boot service that forced AMD GPUs to high at
+    # every startup. Disable it before returning the policy to automatic.
+    if systemctl is-enabled --quiet amdgpu-gaming-profile.service 2>/dev/null || \
+       systemctl is-active --quiet amdgpu-gaming-profile.service 2>/dev/null; then
+      systemctl disable --now amdgpu-gaming-profile.service
+      echo "Disabled the legacy AMD boot performance service."
+    fi
     [[ -x /usr/local/bin/amdgpu-gaming-profile ]] && /usr/local/bin/amdgpu-gaming-profile off
     if [[ -f "${previous_profile}" ]]; then
       tuned-adm profile "$(cat "${previous_profile}")"
