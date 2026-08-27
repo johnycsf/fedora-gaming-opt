@@ -81,6 +81,7 @@ Or do both halves in one go (still log out afterward):
 | AMDGPU | Reversible high-performance toggle on AMD hardware |
 | Sysctl | Optional, conservative compatibility preset |
 | Global env | **Only** `MESA_SHADER_CACHE_MAX_SIZE=512MB` |
+| Steam | Uses every logical CPU thread for Vulkan shader background processing (native and Flatpak) |
 | Heroic | GameMode + esync/fsync, bounded workers, safe env only |
 | Overlays | MangoHud + subtle vkBasalt CAS |
 
@@ -105,6 +106,10 @@ With FPS overlay (Shift+F12):
 ```
 gamemoderun mangohud %command%
 ```
+
+The installer writes Steam's `unShaderBackgroundProcessingThreads` setting using
+all logical CPU threads detected by `nproc`. It supports both native Steam and
+Steam Flatpak; restart Steam after installation for the setting to take effect.
 
 Full guide: [docs/HOWTO.md](docs/HOWTO.md)
 
