@@ -24,22 +24,22 @@ flatpak install -y flathub com.heroicgameslauncher.hgl
 git clone https://github.com/johnycsf/fedora-gaming-opt.git
 cd fedora-gaming-opt
 
-sudo ./install.sh --system
-# Log out / log in so the gamemode group applies
-
-./install.sh --user
-sudo reboot
+./manage.sh install
+# Log out / log in once so the gamemode group applies.
 ```
 
 ### Flags
 
 | Command | Purpose |
 |---------|---------|
-| `sudo ./install.sh --system` | Packages + system configs |
-| `./install.sh --user` | Per-user configs (Heroic, MangoHud, etc.) |
-| `./install.sh --all` | System then user (system half still needs sudo) |
-| `./install.sh --dry-run` | Print actions without changing anything |
-| `./scripts/audit.sh` | Fail if forbidden global env vars exist |
+| `./manage.sh install` | Install packages plus system/user configuration |
+| `./manage.sh install --dry-run` | Print installation actions without changing anything |
+| `./manage.sh install --sysctl-tweaks` | Opt in to conservative sysctl compatibility settings |
+| `./manage.sh performance on` | Enable desktop CPU/GPU performance mode before gaming |
+| `./manage.sh performance off` | Restore the prior tuned profile and AMD automatic mode |
+| `./manage.sh audit` | Fail if forbidden global gaming environment variables exist |
+| `./manage.sh status` | Check readiness and current performance mode |
+| `./manage.sh benchmark before` | Record a baseline system snapshot for a repeatable game test |
 
 ## Steam settings (manual, once)
 
@@ -72,9 +72,10 @@ RADV_PERFTEST=gpl gamemoderun %command%
 
 The user script:
 
-- Enables GameMode, esync, fsync, msync
-- Sets download/shader workers to CPU core count
-- Adds only safe env vars (`MESA_SHADER_CACHE_MAX_SIZE`, `OMP_NUM_THREADS`)
+- Enables GameMode, esync, and fsync
+- Caps download/shader workers at four by default so they do not compete with games
+- Leaves msync and NVAPI as per-game opt-ins
+- Adds only a conservative shader-cache setting
 
 Install/update GE-Proton in Heroic as usual (GE-Proton-latest is fine).
 
@@ -92,32 +93,31 @@ Open **CoreCtrl** for fan curves / power limit / mild overclock on the RX 6700 X
 systemctl --user status gamemoded
 gamemoded -s
 
-# AMD GPU profile (should be high after boot service)
-cat /sys/class/drm/card*/device/power_dpm_force_performance_level
+# Non-destructive readiness and baseline capture
+./manage.sh status
+./manage.sh benchmark before
 
 # Vulkan
 vulkaninfo --summary | head -40
 
 # Safety audit
-./scripts/audit.sh
+./manage.sh audit
 ```
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
-| Steam error `0x3008` | `./scripts/fix-steam.sh` — do not launch Steam via `gamemoderun` |
-| Apps fail with Gamescope WSI / swapchain errors | Ensure `ENABLE_GAMESCOPE_WSI` is unset globally; re-run `./scripts/audit.sh` |
+| Steam error `0x3008` | `./manage.sh fix-steam` — do not launch Steam via `gamemoderun` |
+| Apps fail with Gamescope WSI / swapchain errors | Ensure `ENABLE_GAMESCOPE_WSI` is unset globally; re-run `./manage.sh audit` |
 | GameMode inactive | Log out/in after system install; `systemctl --user enable --now gamemoded` |
-| Heroic GameMode fails in Flatpak | Re-run `./install.sh --user` |
-| Desktop feels “stuck” at max clocks | Normal with AMD `high` profile; use CoreCtrl or GameMode-only if you prefer auto |
+| Heroic GameMode fails in Flatpak | Re-run `./manage.sh install` |
+| Desktop feels “stuck” at max clocks | Run `./manage.sh performance off` to restore AMD automatic mode |
 
 ## Full rollback
 
 ```bash
-./uninstall.sh --user
-sudo ./uninstall.sh --system
-sudo reboot
+./manage.sh uninstall
 ```
 
 Packages installed by the scripts (mangohud, gamescope, etc.) are **not** removed by uninstall, so Steam/games keep working. Remove them with `dnf` if you want a clean slate:

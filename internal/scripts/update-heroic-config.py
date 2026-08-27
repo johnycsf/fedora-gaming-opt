@@ -12,19 +12,21 @@ if not config_path.exists():
     raise SystemExit(0)
 
 cores = max(1, int(os.environ.get("CORES", os.cpu_count() or 6)))
+# All-core workers can compete with a running game; keep the default bounded.
+workers = min(4, cores)
 
 with open(config_path) as f:
     config = json.load(f)
 
 defaults = config.setdefault("defaultSettings", {})
-defaults["maxWorkers"] = cores
+defaults["maxWorkers"] = workers
 defaults["useGameMode"] = True
 defaults["enableEsync"] = True
 defaults["enableFsync"] = True
-defaults["enableMsync"] = True
+defaults["enableMsync"] = False
 defaults["autoInstallDxvk"] = True
 defaults["autoInstallVkd3d"] = True
-defaults["autoInstallDxvkNvapi"] = True
+defaults["autoInstallDxvkNvapi"] = False
 
 # Strip known-harmful globals; keep only safe defaults.
 banned = {
@@ -39,7 +41,6 @@ banned = {
 }
 allowed = {
     "MESA_SHADER_CACHE_MAX_SIZE": "512MB",
-    "OMP_NUM_THREADS": str(cores),
 }
 
 env_opts = [
@@ -61,4 +62,4 @@ with open(config_path, "w") as f:
     json.dump(config, f, indent=2)
     f.write("\n")
 
-print(f"Updated {config_path} (maxWorkers={cores})")
+print(f"Updated {config_path} (maxWorkers={workers}, msync/NVAPI left opt-in)")

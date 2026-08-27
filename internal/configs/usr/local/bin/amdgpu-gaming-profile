@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Toggle discrete AMD GPUs between the high-performance and automatic policy.
+set -euo pipefail
+
+mode="${1:-on}"
+case "${mode}" in on|off) ;; *) echo "Usage: $0 [on|off]" >&2; exit 2 ;; esac
+
+for card in /sys/class/drm/card*/device; do
+  [[ -f "${card}/power_dpm_force_performance_level" ]] || continue
+  if [[ -f "${card}/vendor" ]] && [[ "$(cat "${card}/vendor")" != "0x1002" ]]; then
+    continue
+  fi
+  if [[ "${mode}" == on ]]; then
+    echo high > "${card}/power_dpm_force_performance_level" 2>/dev/null || true
+  else
+    echo auto > "${card}/power_dpm_force_performance_level" 2>/dev/null || true
+  fi
+  if [[ "${mode}" == on && -f "${card}/pp_power_profile_mode" ]]; then
+    echo 1 > "${card}/pp_power_profile_mode" 2>/dev/null || true
+  fi
+done
