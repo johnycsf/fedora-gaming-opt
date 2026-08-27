@@ -5,6 +5,7 @@ set -euo pipefail
 state_dir=/var/lib/fedora-gaming-opt
 previous_profile="${state_dir}/previous-tuned-profile"
 mode="${1:-status}"
+baseline_profile="balanced"
 
 [[ "${EUID}" -eq 0 ]] || { echo "Run with sudo." >&2; exit 1; }
 case "${mode}" in on|off|status) ;; *) echo "Usage: $0 {on|off|status}" >&2; exit 2 ;; esac
@@ -29,7 +30,17 @@ case "${mode}" in
       tuned-adm profile "$(cat "${previous_profile}")"
       rm -f "${previous_profile}"
     else
-      echo "No previous tuned profile was recorded; leaving the current profile unchanged."
+      # Covers upgrades from the old always-on setup, which had no saved profile.
+      tuned-adm profile "${baseline_profile}"
+      echo "No previous tuned profile was recorded; selected ${baseline_profile}."
+    fi
+    if grep -qw 'amdgpu.ppfeaturemask=0xfff7ffff' /proc/cmdline 2>/dev/null; then
+      if command -v grubby >/dev/null; then
+        grubby --update-kernel=ALL --remove-args="amdgpu.ppfeaturemask=0xfff7ffff"
+        echo "Removed the legacy AMD ppfeaturemask boot setting. Reboot once to finish applying that cleanup."
+      else
+        echo "WARNING: Legacy AMD ppfeaturemask remains enabled; grubby was not found." >&2
+      fi
     fi
     echo "Gaming performance mode disabled; AMD policy returned to auto."
     ;;
