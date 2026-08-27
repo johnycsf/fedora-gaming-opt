@@ -38,6 +38,14 @@ restore_file "${HOME_DIR}/.config/MangoHud/MangoHud.conf" || run rm -f "${HOME_D
 restore_file "${HOME_DIR}/.config/vkBasalt/vkBasalt.conf" || run rm -f "${HOME_DIR}/.config/vkBasalt/vkBasalt.conf"
 restore_file "${HOME_DIR}/.local/share/applications/steam.desktop" || run rm -f "${HOME_DIR}/.local/share/applications/steam.desktop"
 restore_file "${HOME_DIR}/.local/bin/steam-gaming" || run rm -f "${HOME_DIR}/.local/bin/steam-gaming"
+for steam_cfg in \
+  "${HOME_DIR}/.steam/steam/steam_dev.cfg" \
+  "${HOME_DIR}/.steam/debian-installation/steam_dev.cfg" \
+  "${HOME_DIR}/.local/share/Steam/steam_dev.cfg" \
+  "${HOME_DIR}/.local/share/steam/steam_dev.cfg" \
+  "${HOME_DIR}/.var/app/com.valvesoftware.Steam/data/Steam/steam_dev.cfg"; do
+  restore_file "${steam_cfg}" || true
+done
 update-desktop-database "${HOME_DIR}/.local/share/applications" 2>/dev/null || true
 
 if command -v flatpak >/dev/null; then

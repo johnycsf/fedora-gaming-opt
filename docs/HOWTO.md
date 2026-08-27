@@ -48,6 +48,7 @@ cd fedora-gaming-opt
 1. **Shader Pre-Caching**
    - Enable Steam Shader Pre-Caching
    - Allow background processing of Vulkan shaders
+   - `./manage.sh install` configures Steam to use all logical CPU threads for this work; restart Steam afterward
 2. **Downloads** — set download threads close to your CPU core count (e.g. 6 on i5-9600K)
 3. Launch Steam from the normal app menu — **never** with `gamemoderun`
 
