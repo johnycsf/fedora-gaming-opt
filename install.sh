@@ -6,6 +6,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DRY_RUN=0
 DO_SYSTEM=0
 DO_USER=0
+AMD_PERFORMANCE=0
+SYSCTL_TWEAKS=0
 
 usage() {
   cat <<'EOF'
@@ -18,6 +20,8 @@ Options:
   --system   Install packages and system-wide configs (root)
   --user     Install per-user Steam/Heroic/MangoHud configs
   --all      Run system then user (must start as root for system)
+  --amd-performance  Opt in to persistent AMD high-performance mode (advanced)
+  --sysctl-tweaks    Install the optional conservative sysctl preset
   --dry-run  Print actions without applying
   -h, --help Show this help
 EOF
@@ -28,6 +32,8 @@ while [[ $# -gt 0 ]]; do
     --system) DO_SYSTEM=1 ;;
     --user) DO_USER=1 ;;
     --all) DO_SYSTEM=1; DO_USER=1 ;;
+    --amd-performance) AMD_PERFORMANCE=1 ;;
+    --sysctl-tweaks) SYSCTL_TWEAKS=1 ;;
     --dry-run) DRY_RUN=1 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1"; usage; exit 1 ;;
@@ -42,6 +48,8 @@ fi
 
 export FGO_DRY_RUN="$DRY_RUN"
 export FGO_ROOT="$ROOT"
+export FGO_AMD_PERFORMANCE="$AMD_PERFORMANCE"
+export FGO_SYSCTL_TWEAKS="$SYSCTL_TWEAKS"
 
 if [[ $DO_SYSTEM -eq 1 ]]; then
   if [[ "${EUID}" -ne 0 ]]; then
@@ -82,6 +90,7 @@ if [[ $DO_USER -eq 1 ]]; then
     fi
     echo "==> Re-running user install as ${TARGET_USER}..."
     sudo -u "${TARGET_USER}" -H env FGO_DRY_RUN="$DRY_RUN" FGO_ROOT="$ROOT" \
+      FGO_AMD_PERFORMANCE="$AMD_PERFORMANCE" FGO_SYSCTL_TWEAKS="$SYSCTL_TWEAKS" \
       bash "${ROOT}/scripts/20-user.sh"
   else
     bash "${ROOT}/scripts/20-user.sh"

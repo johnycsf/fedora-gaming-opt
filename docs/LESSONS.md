@@ -55,7 +55,9 @@ Put game-specific vars in Steam/Heroic launch options.
 
 ## 4. Prefer GameMode during games, not permanent overclock policies alone
 
-GameMode + AMD `high` performance level is enough for most sessions. Permanent max clocks are fine on a desktop gaming box but raise idle power/heat. Adjust with CoreCtrl if needed.
+GameMode can request AMD `high` performance level only while a game runs. Keep
+persistent max clocks and feature unlocks opt-in, benchmark them first, and
+record power/temperature costs alongside FPS and frametimes.
 
 ## 5. Always keep a rollback path
 

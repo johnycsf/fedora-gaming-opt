@@ -14,7 +14,7 @@ Personal Fedora Workstation gaming setup for Steam and Heroic.
 It was written for **one** machine and is published so others can learn from it or adapt it. You are responsible for what you run on your computer.
 
 - Provided **as-is**, with **no warranty** (see [LICENSE](LICENSE)).
-- Can change kernel parameters, CPU/GPU power behavior, sysctl, and packages.
+- Advanced options can change kernel parameters, CPU/GPU power behavior, and sysctl.
 - May reduce battery life, raise temps, or cause instability on hardware that does not match the reference system.
 - Always try `--dry-run` first, and keep [uninstall/rollback](#rollback) available.
 - Prefer reading the scripts under `scripts/` and `configs/` before applying.
@@ -34,7 +34,8 @@ Tuned and battle-tested on:
 **Reasonable fit:** similar AMD Radeon + Fedora desktop gaming PCs.  
 **Poor fit / skip:** NVIDIA-primary systems, Intel-only iGPU laptops, servers, or anyone who needs maximum stability over FPS.
 
-The installer **skips AMD-only kernel args/services** when no AMD GPU is detected, but GameMode/sysctl/tuned changes still apply and may not suit every machine.
+The default install avoids persistent AMD power/kernel tuning. Those options are
+available only on AMD hardware when explicitly requested.
 
 After a fresh Fedora install on matching hardware, clone this repo and run the install scripts.
 
@@ -70,10 +71,10 @@ sudo ./install.sh --system
 ./install.sh --user
 
 # 4) Reboot so kernel GPU args apply
-sudo reboot
+# Reboot is only needed when using the advanced AMD option below.
 ```
 
-Or do both halves in one go (still log out/reboot afterward):
+Or do both halves in one go (still log out afterward):
 
 ```bash
 sudo ./install.sh --system
@@ -85,11 +86,11 @@ sudo ./install.sh --system
 | Layer | Changes |
 |-------|---------|
 | Packages | GameMode, MangoHud, gamescope, CoreCtrl, vulkan-tools, vkBasalt, lm_sensors |
-| GameMode | Performance governor, AMD GPU high perf, core pinning |
-| AMDGPU | Boot service + `amdgpu.ppfeaturemask` for full feature unlock |
-| Sysctl | Gaming-friendly memory / Proton map count tweaks |
+| GameMode | Per-game governor and priority management; no core pinning by default |
+| AMDGPU | Advanced persistent high-performance mode is explicit opt-in |
+| Sysctl | Optional, conservative compatibility preset |
 | Global env | **Only** `MESA_SHADER_CACHE_MAX_SIZE=512MB` |
-| Heroic | GameMode, esync/fsync/msync, safe env only |
+| Heroic | GameMode + esync/fsync, bounded workers, safe env only |
 | Overlays | MangoHud + subtle vkBasalt CAS |
 
 ## Hard rules (do not break these)
@@ -115,6 +116,25 @@ gamemoderun mangohud %command%
 ```
 
 Full guide: [docs/HOWTO.md](docs/HOWTO.md)
+
+## Measure before changing advanced settings
+
+Record a baseline, run the same game/scene with MangoHud logging, then compare
+frametimes, 1% lows, temperatures, and power—not only average FPS:
+
+```bash
+./scripts/check.sh
+./scripts/benchmark.sh before
+# test a repeatable game scene
+./scripts/benchmark.sh after
+```
+
+Advanced options are deliberately opt-in:
+
+```bash
+sudo ./install.sh --system --sysctl-tweaks
+sudo ./install.sh --system --amd-performance  # persistent AMD clocks/features; reboot required
+```
 
 ## Rollback
 

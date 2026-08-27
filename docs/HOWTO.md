@@ -28,7 +28,7 @@ sudo ./install.sh --system
 # Log out / log in so the gamemode group applies
 
 ./install.sh --user
-sudo reboot
+# Reboot only if you explicitly enable --amd-performance.
 ```
 
 ### Flags
@@ -39,7 +39,11 @@ sudo reboot
 | `./install.sh --user` | Per-user configs (Heroic, MangoHud, etc.) |
 | `./install.sh --all` | System then user (system half still needs sudo) |
 | `./install.sh --dry-run` | Print actions without changing anything |
+| `sudo ./install.sh --system --sysctl-tweaks` | Opt in to conservative sysctl compatibility settings |
+| `sudo ./install.sh --system --amd-performance` | Opt in to persistent AMD high-performance mode; reboot required |
 | `./scripts/audit.sh` | Fail if forbidden global env vars exist |
+| `./scripts/check.sh` | Check tools and conservative defaults without changing anything |
+| `./scripts/benchmark.sh before` | Record a baseline system snapshot for a repeatable game test |
 
 ## Steam settings (manual, once)
 
@@ -72,9 +76,10 @@ RADV_PERFTEST=gpl gamemoderun %command%
 
 The user script:
 
-- Enables GameMode, esync, fsync, msync
-- Sets download/shader workers to CPU core count
-- Adds only safe env vars (`MESA_SHADER_CACHE_MAX_SIZE`, `OMP_NUM_THREADS`)
+- Enables GameMode, esync, and fsync
+- Caps download/shader workers at four by default so they do not compete with games
+- Leaves msync and NVAPI as per-game opt-ins
+- Adds only a conservative shader-cache setting
 
 Install/update GE-Proton in Heroic as usual (GE-Proton-latest is fine).
 
@@ -92,8 +97,9 @@ Open **CoreCtrl** for fan curves / power limit / mild overclock on the RX 6700 X
 systemctl --user status gamemoded
 gamemoded -s
 
-# AMD GPU profile (should be high after boot service)
-cat /sys/class/drm/card*/device/power_dpm_force_performance_level
+# Non-destructive readiness and baseline capture
+./scripts/check.sh
+./scripts/benchmark.sh before
 
 # Vulkan
 vulkaninfo --summary | head -40
@@ -110,7 +116,7 @@ vulkaninfo --summary | head -40
 | Apps fail with Gamescope WSI / swapchain errors | Ensure `ENABLE_GAMESCOPE_WSI` is unset globally; re-run `./scripts/audit.sh` |
 | GameMode inactive | Log out/in after system install; `systemctl --user enable --now gamemoded` |
 | Heroic GameMode fails in Flatpak | Re-run `./install.sh --user` |
-| Desktop feels “stuck” at max clocks | Normal with AMD `high` profile; use CoreCtrl or GameMode-only if you prefer auto |
+| Desktop feels “stuck” at max clocks | Disable the advanced AMD option with `sudo ./uninstall.sh --system`, then reboot |
 
 ## Full rollback
 
