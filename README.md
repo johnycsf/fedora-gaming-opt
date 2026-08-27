@@ -38,8 +38,9 @@ detects GPU vendors at install time and keeps vendor-specific steps separate:
 - **All supported GPU vendors:** GameMode, MangoHud, Gamescope, Vulkan tools,
   vkBasalt, Steam shader-thread configuration, Heroic configuration, and the
   reversible `tuned` performance profile.
-- **AMD GPUs:** additionally install CoreCtrl and enable the AMD GPU policy
-  portion of `./manage.sh performance on|off`.
+- **AMD GPUs using the `amdgpu` driver:** additionally install CoreCtrl and
+  enable the AMD GPU policy portion of `./manage.sh performance on|off` when
+  the driver exposes its standard performance-policy control.
 - **NVIDIA or Intel GPUs:** skip only the AMD-specific CoreCtrl and AMD power
   policy steps; the rest of the setup remains available.
 
@@ -85,9 +86,9 @@ Or do both halves in one go (still log out afterward):
 
 | Layer | Changes |
 |-------|---------|
-| Packages | GameMode, MangoHud, gamescope, vulkan-tools, vkBasalt, lm_sensors, tuned; CoreCtrl on AMD GPUs |
+| Packages | GameMode, MangoHud, gamescope, vulkan-tools, vkBasalt, lm_sensors, tuned; CoreCtrl on AMD GPUs using `amdgpu` |
 | GameMode | Per-game governor and priority management; no core pinning by default |
-| GPU controls | Reversible AMD GPU power toggle on AMD hardware; safely skipped on NVIDIA and Intel GPUs |
+| GPU controls | Reversible AMD GPU power toggle where `amdgpu` exposes the standard control; safely skipped on NVIDIA and Intel GPUs |
 | Sysctl | Optional, conservative compatibility preset |
 | Global env | **Only** `MESA_SHADER_CACHE_MAX_SIZE=512MB` |
 | Steam | Uses every logical CPU thread for Vulkan shader background processing (native and Flatpak) |
