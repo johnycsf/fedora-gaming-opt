@@ -1,0 +1,5 @@
+{
+  "name": "Fedora Gaming Optimizations",
+  "user": "ubuntu",
+  "install": "sudo apt-get update && sudo apt-get install -y --no-install-recommends shellcheck && shellcheck --version && bash --version | head -1 && python3 --version"
+}
